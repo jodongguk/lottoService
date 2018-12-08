@@ -1,19 +1,16 @@
 package com.donggoos.lotto.controller;
 
-import com.donggoos.lotto.model.Draw;
-import com.donggoos.lotto.repositories.DrawRepository;
-import com.donggoos.lotto.service.ApiService;
-import com.donggoos.lotto.service.DrawService;
+import com.donggoos.lotto.draw.domain.Draw;
+import com.donggoos.lotto.draw.domain.repository.DrawRepository;
+import com.donggoos.lotto.draw.service.DrawWithApiService;
+import java.util.List;
+import javax.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 
 
 @RequestMapping(value = "/api/v1")
@@ -21,10 +18,7 @@ import java.util.Optional;
 public class ApiController {
 
     @Autowired
-    private HttpServletRequest request;
-
-    @Autowired
-    private DrawService drawService;
+    private DrawWithApiService drawWithApiService;
 
     @Autowired
     private DrawRepository drawRepository;
@@ -35,8 +29,13 @@ public class ApiController {
     }
 
     @GetMapping(value = "/draw/{id}")
-    public Draw getDrawOne(@PathVariable(required = true, name = "id") Long id) throws IOException {
-        return drawService.getDrawOne(id);
+    public Draw findOne(@PathVariable Long id) {
+        return drawWithApiService.findOne(id);
+    }
+
+    @ExceptionHandler
+    public String lottoNotFound(EntityNotFoundException e) {
+        return "회차에 해당하는 로또 당첨번호 정보가 없습니다.";
     }
 
 }
