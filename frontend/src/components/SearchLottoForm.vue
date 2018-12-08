@@ -14,7 +14,7 @@
             </b-input-group>
         </b-form>
 
-        <div v-if="showResponse">
+        <div class="lotto-num-deck" v-if="showResponse">
             <div class="lotto-num num1">{{ draw.num1 }}</div>
             <div class="lotto-num num2">{{ draw.num2 }}</div>
             <div class="lotto-num num3">{{ draw.num3 }}</div>
@@ -23,10 +23,30 @@
             <div class="lotto-num num6">{{ draw.num6 }}</div>
             <div class="lotto-num bonus">{{ draw.bonusNum }}</div>
         </div>
+
+        <div v-if="showResponse">
+            <GmapMap
+                    :center="{lat:37.61921, lng:126.91977}"
+                    :zoom="6"
+                    map-type-id="terrain"
+                    style="width: 500px; height: 300px"
+            >
+                <GmapMarker
+                        :key="index"
+                        v-for="(m, index) in draw.winningPlace"
+                        :position="google && new google.maps.LatLng(m.lat, m.lng)"
+                        :clickable="true"
+                        :draggable="false"
+                        @click="center=new google.maps.LatLng(m.lat, m.lng)"
+                />
+            </GmapMap>
+        </div>
     </div>
 </template>
 <script>
     import {AXIOS} from './http-common'
+    import {gmapApi} from 'vue2-google-maps'
+
     export default {
         name: 'searchLottoForm',
         data() {
@@ -54,6 +74,9 @@
                         this.errors.push(e)
                     });
             }
+        },
+        computed: {
+            google: gmapApi
         }
     }
 </script>
